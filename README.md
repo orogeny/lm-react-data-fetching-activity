@@ -9,7 +9,7 @@
 
 1. In poem_container.tsx, use fetch with useEffect to load the data from the following endpoint:
 
-   > "/mockapi.com/api/v1/poems"
+   > "/poetriumph.com/api/v1/poems"
 
 2. Pass the data from the PoemContainer component to the PoemsList
 3. Add a loading state to provide feedback to the user that the poems are loading (there's a component ready for you to use)
