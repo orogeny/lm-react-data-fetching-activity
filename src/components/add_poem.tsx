@@ -12,11 +12,9 @@ export const AddPoem: React.FC<AddPoemProps> = ({ setPoems }) => {
   })
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    setInputData((currentData) =>
-      Object.assign({}, currentData, {
-        [event.target.id]: event.target.value,
-      })
-    )
+    setInputData((currentData) => {
+      return { ...currentData, [event.target.id]: event.target.value }
+    })
   }
 
   function handleSubmitPoem() {
