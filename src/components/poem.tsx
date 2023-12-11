@@ -1,7 +1,7 @@
-import { PoemData } from "./poem_container"
+import { PoemData } from "./poem_container";
 
 interface PoemProps {
-  poem: PoemData
+  poem: PoemData;
 }
 
 export const Poem: React.FC<PoemProps> = ({
@@ -9,7 +9,7 @@ export const Poem: React.FC<PoemProps> = ({
 }) => {
   return (
     <>
-      <li key={id} className="poem-item">
+      <li className="poem-item">
         <h3>{title}</h3>
         <p className="poem-text">{body}</p>
         <p>{author}</p>
@@ -21,11 +21,11 @@ export const Poem: React.FC<PoemProps> = ({
             id={id.toString()}
             checked={isLiked}
             onChange={() => {
-              "this doesn't do anything yet!"
+              "this doesn't do anything yet!";
             }}
           />
         </label>
       </li>
     </>
-  )
-}
+  );
+};
