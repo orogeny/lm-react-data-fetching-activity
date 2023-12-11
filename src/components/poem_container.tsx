@@ -14,11 +14,13 @@ export const PoemContainer: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("PoemContainer::useEffect");
+
     async function getPoems() {
       const data = await fetch("/poetriumph.com/api/v1/poems");
       const result: PoemsResponse = await data.json();
-      setLoading(false);
       setPoems(result);
+      setLoading(false);
     }
     getPoems();
   }, []);

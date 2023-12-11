@@ -1,29 +1,41 @@
-import { PoemsResponse } from "./poem_container"
-import { ChangeEvent, useState } from "react"
+import { PoemsResponse } from "./poem_container";
+import { ChangeEvent, MouseEvent, useState } from "react";
 
 type AddPoemProps = {
-  setPoems: React.Dispatch<React.SetStateAction<PoemsResponse>>
-}
+  setPoems: React.Dispatch<React.SetStateAction<PoemsResponse>>;
+};
+
+const blankPoem = { title: "", body: "", author: "" };
+
 export const AddPoem: React.FC<AddPoemProps> = ({ setPoems }) => {
-  const [inputData, setInputData] = useState({
-    title: "",
-    body: "",
-    author: "",
-  })
+  const [inputData, setInputData] = useState(blankPoem);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     setInputData((currentData) => {
-      return { ...currentData, [event.target.id]: event.target.value }
-    })
+      return { ...currentData, [event.target.id]: event.target.value };
+    });
   }
 
-  function handleSubmitPoem() {
-    try {
-      // This is where you'll implement some data fetching logic to POST a new poem to the API
-      console.log(setPoems)
-    } catch (error) {
-      console.log(error)
-    }
+  function handleSubmitPoem(e: MouseEvent<HTMLButtonElement>) {
+    e.preventDefault();
+
+    fetch("/poetriumph.com/api/v1/poems", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(inputData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        return response.json();
+      })
+      .then((payload) => setPoems((prev) => [...prev, payload.poem]))
+      .then(() => setInputData(blankPoem))
+      .catch((error) => console.log(error));
   }
 
   return (
@@ -63,5 +75,5 @@ export const AddPoem: React.FC<AddPoemProps> = ({ setPoems }) => {
         <button onClick={handleSubmitPoem}>Add to Collection</button>
       </form>
     </>
-  )
-}
+  );
+};
