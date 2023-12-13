@@ -3,6 +3,7 @@ import { PoemsList } from "./poems_list";
 import { AddPoem } from "./add_poem";
 import { ShowLoading } from "./show_loading";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export interface PoemData extends PoemItem {
   id: number;
@@ -11,13 +12,8 @@ export interface PoemData extends PoemItem {
 export type PoemsResponse = Array<PoemData>;
 
 async function getPoems() {
-  const response = await fetch("/poetriumph.com/api/v1/poems");
-
-  if (!response.ok) {
-    throw new Error("GET /poems failed");
-  }
-
-  return response.json();
+  const { data } = await axios.get("/poetriumph.com/api/v1/poems");
+  return data;
 }
 
 export const PoemContainer: React.FC = () => {
