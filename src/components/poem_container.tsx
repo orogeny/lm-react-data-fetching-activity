@@ -11,14 +11,16 @@ export type PoemsResponse = Array<PoemData>;
 
 export const PoemContainer: React.FC = () => {
   const [poems, setPoems] = useState<PoemsResponse>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log("PoemContainer::useEffect");
-
     async function getPoems() {
+      setLoading(true);
+
       const data = await fetch("/poetriumph.com/api/v1/poems");
+
       const result: PoemsResponse = await data.json();
+
       setPoems(result);
       setLoading(false);
     }
@@ -30,7 +32,7 @@ export const PoemContainer: React.FC = () => {
       <h1>Nature Poems: An Artificial Perspective</h1>
       <AddPoem setPoems={setPoems} />
       <ShowLoading isLoading={loading} />
-      <PoemsList poems={poems} />
+      <PoemsList poems={poems} setPoems={setPoems} />
     </>
   );
 };
