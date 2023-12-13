@@ -1,17 +1,28 @@
 import { ChangeEvent } from "react";
 import { PoemData } from "./poem_container";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface PoemProps {
   poem: PoemData;
-  toggleLiked: (id: number, isLiked: boolean) => void;
 }
 
 export const Poem: React.FC<PoemProps> = ({
   poem: { id, title, body, author, isLiked },
-  toggleLiked,
 }) => {
+  const queryClient = useQueryClient();
+
+  const toggleLikedMutation = useMutation({
+    mutationFn: toggleLiked,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["poems"] });
+    },
+  });
+
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    toggleLiked(parseInt(e.target.id), e.target.checked);
+    toggleLikedMutation.mutate({
+      id: parseInt(e.target.id),
+      isLiked: e.target.checked,
+    });
   }
 
   return (
@@ -34,3 +45,19 @@ export const Poem: React.FC<PoemProps> = ({
     </>
   );
 };
+
+async function toggleLiked(updated: { id: number; isLiked: boolean }) {
+  const response = await fetch("/poetriumph.com/api/v1/poems", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updated),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message);
+  }
+
+  return result;
+}

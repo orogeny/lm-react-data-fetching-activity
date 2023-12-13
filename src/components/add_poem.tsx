@@ -1,14 +1,19 @@
-import { PoemsResponse } from "./poem_container";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChangeEvent, MouseEvent, useState } from "react";
-
-type AddPoemProps = {
-  setPoems: React.Dispatch<React.SetStateAction<PoemsResponse>>;
-};
 
 const blankPoem = { title: "", body: "", author: "" };
 
-export const AddPoem: React.FC<AddPoemProps> = ({ setPoems }) => {
+export const AddPoem: React.FC = () => {
   const [inputData, setInputData] = useState(blankPoem);
+
+  const queryClient = useQueryClient();
+
+  const createPoemMutation = useMutation({
+    mutationFn: createPoem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["poems"] });
+    },
+  });
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     setInputData((currentData) => {
@@ -18,24 +23,8 @@ export const AddPoem: React.FC<AddPoemProps> = ({ setPoems }) => {
 
   function handleSubmitPoem(e: MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-
-    fetch("/poetriumph.com/api/v1/poems", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(inputData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-
-        return response.json();
-      })
-      .then((payload) => setPoems((prev) => [...prev, payload.poem]))
-      .then(() => setInputData(blankPoem))
-      .catch((error) => console.log(error));
+    createPoemMutation.mutate(inputData);
+    setInputData(blankPoem);
   }
 
   return (
@@ -77,3 +66,25 @@ export const AddPoem: React.FC<AddPoemProps> = ({ setPoems }) => {
     </>
   );
 };
+
+async function createPoem(poem: {
+  title: string;
+  body: string;
+  author: string;
+}) {
+  const response = await fetch("/poetriumph.com/api/v1/poems", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(poem),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message);
+  }
+
+  return result.poem;
+}
