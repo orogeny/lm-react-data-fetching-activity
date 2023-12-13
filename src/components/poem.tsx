@@ -1,6 +1,7 @@
 import { ChangeEvent } from "react";
 import { PoemData } from "./poem_container";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 
 interface PoemProps {
   poem: PoemData;
@@ -47,17 +48,6 @@ export const Poem: React.FC<PoemProps> = ({
 };
 
 async function toggleLiked(updated: { id: number; isLiked: boolean }) {
-  const response = await fetch("/poetriumph.com/api/v1/poems", {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(updated),
-  });
-
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(result.message);
-  }
-
-  return result;
+  const { data } = await axios.patch("/poetriumph.com/api/v1/poems", updated);
+  return data;
 }
