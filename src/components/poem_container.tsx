@@ -13,7 +13,7 @@ export type PoemsResponse = Array<PoemData>;
 
 async function getPoems() {
   const { data } = await axios.get("/poetriumph.com/api/v1/poems");
-  return data;
+  return data as PoemsResponse;
 }
 
 export const PoemContainer: React.FC = () => {

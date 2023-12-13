@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { ChangeEvent, MouseEvent, useState } from "react";
 
 const blankPoem = { title: "", body: "", author: "" };
@@ -72,19 +73,6 @@ async function createPoem(poem: {
   body: string;
   author: string;
 }) {
-  const response = await fetch("/poetriumph.com/api/v1/poems", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(poem),
-  });
-
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(result.message);
-  }
-
-  return result.poem;
+  const { data } = await axios.post("/poetriumph.com/api/v1/poems", poem);
+  return data.poem;
 }
